@@ -76,7 +76,8 @@ public class Main {
 //            for (int i = 0; i < r; ++i) System.out.printf("%02X ", head[i]);
 //            System.out.println();
 //        }
-        HuffFileReader.readDecoder("output.huf");
+        HuffFileReader.DecoderClass decode_details= HuffFileReader.readDecoder("output.huf");
+        System.out.println("Successfully encoded and decoded the file");
 
 
 
