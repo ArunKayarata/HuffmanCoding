@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+//https://opendsa-server.cs.vt.edu/ODSA/Books/CS3/html/Huffman.html
+//refer above website for understanding Huffman coding algorithm
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
