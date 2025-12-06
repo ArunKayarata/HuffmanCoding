@@ -34,46 +34,60 @@ public class Main {
                 freq.put(c,freq.getOrDefault(c,0)+1);
             }
         }
-        System.out.println("As full text string: "+ fulltext);
+//        System.out.println("As full text string: "+ fulltext);
 
+        //Insert the character and its freq into the PQ and it stores these values in increasing order of freq
         for(Map.Entry<Character,Integer> entry : freq.entrySet()){
-            System.out.println(entry.getKey()+" : "+ entry.getValue());
+//            System.out.println(entry.getKey()+" : "+ entry.getValue());
             char ch = entry.getKey();
             int wt = entry.getValue();
             HuffTree t1 = new HuffTree(wt,ch);
             minheap.add(t1);
         }
+
         HuffTree root = buildTree();
         Map<Character,String> countTable = new HashMap<>();
+        // We have the HuffTree handy now we need to construct the codes for the each character using HuffTree
         buildCodes(root.getRoot(),"",countTable);
 
-
-       for(Map.Entry<Character,String> entry : countTable.entrySet()){
-           System.out.println(entry.getKey() +":  " + entry.getValue());
-       }
+//
+//       for(Map.Entry<Character,String> entry : countTable.entrySet()){
+//           System.out.println(entry.getKey() +":  " + entry.getValue());
+//       }
 
        int [] validbits = new int[1];
        byte[] encoded = BitOutputStream.encodeStringWithTable(fulltext,countTable,validbits);
-        System.out.println("Original bytes: " + fulltext.getBytes().length);
-        System.out.println("Encoded bytes : " + encoded.length);
-        System.out.println("Valid bits in last byte: " + validbits[0]);
+//        System.out.println("Original bytes: " + fulltext.getBytes().length);
+//        System.out.println("Encoded bytes : " + encoded.length);
+//        System.out.println("Valid bits in last byte: " + validbits[0]);
 
 // print first few bytes in hex for inspection
-        for (int i = 0; i < Math.min(encoded.length, 8); ++i) {
-            System.out.printf("%02X ", encoded[i]);
-        }
-        System.out.println();
+//        for (int i = 0; i < Math.min(encoded.length, 8); ++i) {
+//            System.out.println("Encoded hex codes");
+//            System.out.printf("%02X ", encoded[i]);
+//        }
+//        System.out.println();
 
 
         HuffFileWriter.writeCompressedFile("output.huf",freq,encoded,validbits[0]);
-        try (FileInputStream fis = new FileInputStream("output.huf")) {
-            byte[] head = new byte[64];
-            int r = fis.read(head);
-            for (int i = 0; i < r; ++i) System.out.printf("%02X ", head[i]);
-            System.out.println();
-        }
+//        try (FileInputStream fis = new FileInputStream("output.huf")) {
+//            byte[] head = new byte[64];
+//            int r = fis.read(head);
+//            for (int i = 0; i < r; ++i) System.out.printf("%02X ", head[i]);
+//            System.out.println();
+//        }
+        HuffFileReader.readDecoder("output.huf");
+
+
+
+
 
     }
+
+    // The PQ gets least repeated chars and merges it to form a HuffTree till there is only one element left
+    // once the final HUffTree is constructed the character which repeated few times will be at the farthest from the root
+    // and the char which repeated more often which be nearest to the root this is the main crux of the Tree and this is what makes
+    // assigning less sized bit to the char which repeated more times
     public static  HuffTree buildTree(){
         HuffTree tmp1,tmp2,tmp3 = null;
         while(minheap.size()>1){
@@ -86,6 +100,10 @@ public class Main {
 
 
     }
+    // here we recursively visit all nodes in the tree and we append '0' to the string when we move left and '1' when we move right
+    // while looping whenever we find leafNode we store the details in the Map with character and String for ex : if the string is 011 it signifies
+    // from root of the HUffTree travel one step left and two steps right the final node will contains Node of character you stored in Map
+    // we could have used int[] Instead of string which is immutable and not space efficient and time efficient
     public static void buildCodes(HuffBaseNode node,String codeBits,Map<Character,String> countTable ) {
         if (node.isLeaf()) {
             char  symbol = ((HuffLeafNode) node).ch;
